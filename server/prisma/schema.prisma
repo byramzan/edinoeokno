@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Факультет ──────────────────────────────────────────
+model Faculty {
+  id        String   @id @default(uuid())
+  name      String
+  shortName String
+  createdAt DateTime @default(now())
+
+  groups   Group[]
+  students User[]    @relation("StudentFaculty")
+  staff    User[]    @relation("StaffFaculty")
+  requests Request[]
+}
+
+// ── Учебная группа ─────────────────────────────────────
+model Group {
+  id        String  @id @default(uuid())
+  name      String
+  course    Int
+  faculty   Faculty @relation(fields: [facultyId], references: [id])
+  facultyId String
+
+  students User[]
+}
+
+// ── Пользователь ───────────────────────────────────────
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(STUDENT)
+  fullName     String
+  shortName    String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  recordBook       String?
+  group            Group?   @relation(fields: [groupId], references: [id])
+  groupId          String?
+  studentFaculty   Faculty? @relation("StudentFaculty", fields: [studentFacultyId], references: [id])
+  studentFacultyId String?
+
+  position       String?
+  staffFaculty   Faculty? @relation("StaffFaculty", fields: [staffFacultyId], references: [id])
+  staffFacultyId String?
+
+  requests          Request[]     @relation("StudentRequests")
+  assignedReqs      Request[]     @relation("AssignedRequests")
+  threadMessages    ThreadMessage[]
+  uploadedTemplates DocTemplate[]
+}
+
+enum Role {
+  STUDENT
+  STAFF
+  ADMIN
+}
+
+// ── Тип документа ─────────────────────────────────────
+model DocType {
+  id               String  @id @default(uuid())
+  slug             String  @unique
+  title            String
+  category         String
+  description      String
+  requiresTemplate Boolean @default(false)
+  processingDays   String
+  isActive         Boolean @default(true)
+
+  requests  Request[]
+  templates DocTemplate[]
+}
+
+// ── Шаблон документа (DOCX) ───────────────────────────
+model DocTemplate {
+  id            String   @id @default(uuid())
+  docType       DocType  @relation(fields: [docTypeId], references: [id])
+  docTypeId     String
+  version       Int      @default(1)
+  filename      String
+  storagePath   String
+  sizeBytes     Int
+  uploadedBy    User     @relation(fields: [uploadedById], references: [id])
+  uploadedById  String
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  downloadCount Int      @default(0)
+  variables     Json     @default("[]")
+}
+
+// ── Заявка ─────────────────────────────────────────────
+model Request {
+  id           String        @id
+  docType      DocType       @relation(fields: [docTypeId], references: [id])
+  docTypeId    String
+  faculty      Faculty       @relation(fields: [facultyId], references: [id])
+  facultyId    String
+
+  student      User          @relation("StudentRequests", fields: [studentId], references: [id])
+  studentId    String
+  assignedTo   User?         @relation("AssignedRequests", fields: [assignedToId], references: [id])
+  assignedToId String?
+
+  status    RequestStatus @default(DRAFT)
+  purpose   String?
+  copies    Int           @default(1)
+  delivery  DeliveryType  @default(ELECTRONIC)
+  recipient String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  attachments Attachment[]
+  thread      ThreadMessage[]
+}
+
+enum RequestStatus {
+  DRAFT
+  SENT
+  REVIEW
+  REVISE
+  DONE
+  REJECT
+}
+
+enum DeliveryType {
+  ELECTRONIC
+  PAPER
+}
+
+// ── Вложение ───────────────────────────────────────────
+model Attachment {
+  id          String   @id @default(uuid())
+  request     Request  @relation(fields: [requestId], references: [id])
+  requestId   String
+  filename    String
+  storagePath String
+  sizeBytes   Int
+  mimeType    String
+  uploadedAt  DateTime @default(now())
+  isResult    Boolean  @default(false)
+}
+
+// ── Переписка по заявке ────────────────────────────────
+model ThreadMessage {
+  id        String      @id @default(uuid())
+  request   Request     @relation(fields: [requestId], references: [id])
+  requestId String
+  author    User        @relation(fields: [authorId], references: [id])
+  authorId  String
+  kind      MessageKind
+  text      String
+  createdAt DateTime    @default(now())
+}
+
+enum MessageKind {
+  SYSTEM
+  STUDENT
+  STAFF
+}
