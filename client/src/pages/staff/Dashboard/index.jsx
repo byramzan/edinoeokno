@@ -88,10 +88,10 @@ export default function StaffDashboard() {
           {loading ? (
             <div style={{ padding: 20, textAlign: 'center', color: 'var(--muted)' }}>Загрузка…</div>
           ) : newest.length > 0 ? (
-            <table className="tbl">
+            <div className="tbl-wrap"><table className="tbl">
               <thead><tr><th style={{ width: 130 }}>Номер</th><th>Документ</th><th>Студент</th><th style={{ width: 150 }}>Статус</th><th style={{ width: 110 }}>Обновлено</th></tr></thead>
               <tbody>{newest.map(r => <StaffRequestRow key={r.id} r={r} onOpen={id => navigate(`/staff/requests/${id}`)} />)}</tbody>
-            </table>
+            </table></div>
           ) : (
             <div className="empty" style={{ padding: 40 }}><div>Новых заявок нет 🎉</div></div>
           )}
@@ -124,10 +124,10 @@ export default function StaffDashboard() {
           <span className="muted" style={{ fontSize: 13 }}>{inWork.length} заявок</span>
         </div>
         {inWork.length > 0 ? (
-          <table className="tbl">
+          <div className="tbl-wrap"><table className="tbl">
             <thead><tr><th style={{ width: 130 }}>Номер</th><th>Документ</th><th>Студент</th><th style={{ width: 150 }}>Статус</th><th style={{ width: 110 }}>Обновлено</th></tr></thead>
             <tbody>{inWork.map(r => <StaffRequestRow key={r.id} r={r} onOpen={id => navigate(`/staff/requests/${id}`)} />)}</tbody>
-          </table>
+          </table></div>
         ) : (
           <div className="empty" style={{ padding: 30 }}><div>Нет заявок в работе</div></div>
         )}

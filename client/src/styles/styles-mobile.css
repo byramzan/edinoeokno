@@ -1,0 +1,225 @@
+/* ============================================================
+   Мобильная адаптация
+   768px — планшет (sidebar → иконки)
+   560px — телефон (sidebar → нижняя панель)
+   ============================================================ */
+
+/* ── Планшет: sidebar сжимается до иконок ─────────────────── */
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 60px 1fr;
+  }
+
+  .sidebar {
+    padding: 12px 8px;
+    gap: 12px;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .brand {
+    padding-bottom: 12px;
+    justify-content: center;
+  }
+  .brand-text { display: none; }
+
+  .nav-section { width: 100%; align-items: center; }
+  .nav-section-title { display: none; }
+
+  .nav-item {
+    justify-content: center;
+    padding: 10px;
+    width: 40px;
+  }
+  .nav-item span { display: none; }
+  .nav-item .badge {
+    position: absolute;
+    top: 4px; right: 4px;
+    padding: 1px 5px;
+    font-size: 10px;
+  }
+  .nav-item { position: relative; }
+
+  .sidebar-foot {
+    padding: 8px;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .sidebar-foot .who { display: none; }
+
+  .main {
+    padding: 14px 16px 32px;
+  }
+
+  .page-head h1 { font-size: 20px; }
+  .page-head { flex-wrap: wrap; gap: 10px; }
+
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+
+  .search { width: 100%; min-width: 0; }
+
+  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  .wizard { grid-template-columns: 1fr; }
+  .steps { position: static; flex-direction: row; overflow-x: auto; padding: 12px; }
+  .step + .step::before { display: none; }
+  .step { flex-direction: column; align-items: center; flex-shrink: 0; }
+  .step-s { display: none; }
+
+  .form-row { grid-template-columns: 1fr; }
+
+  .detail-grid { grid-template-columns: 1fr; }
+
+  .rv-row { grid-template-columns: 1fr; gap: 2px; padding: 10px 16px; }
+  .rv-row span { font-size: 11.5px; }
+
+  .doc-grid { grid-template-columns: 1fr; }
+  .tpl-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .th-bubble { max-width: 85%; }
+}
+
+/* ── Телефон: sidebar → фиксированная нижняя панель ──────── */
+@media (max-width: 560px) {
+  .app {
+    grid-template-columns: 1fr;
+    padding-bottom: 64px;
+  }
+
+  /* Нижняя панель */
+  .sidebar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    width: 100%;
+    flex-direction: row;
+    padding: 0 8px;
+    gap: 0;
+    z-index: 100;
+    background: linear-gradient(90deg, #122548 0%, #1E3A6B 100%);
+    border-top: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.15);
+    overflow: hidden;
+    align-items: stretch;
+    justify-content: space-around;
+  }
+
+  /* Скрываем лишнее в нижней панели */
+  .brand { display: none; }
+  .sidebar > nav:last-of-type { display: none; } /* Сервис-секция */
+  .sidebar-foot { display: none; }
+
+  /* Основная навигация — горизонтальная */
+  .sidebar > nav:first-of-type {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+    gap: 0;
+  }
+  .sidebar > nav:first-of-type .nav-section-title { display: none; }
+
+  .nav-item {
+    flex: 1;
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 4px;
+    width: auto;
+    height: 100%;
+    border-radius: 0;
+    font-size: 10px;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav-item span {
+    display: block;
+    font-size: 10px;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60px;
+  }
+  .nav-item svg { flex-shrink: 0; }
+  .nav-item .badge {
+    top: 4px; right: calc(50% - 18px);
+  }
+
+  /* Выход — в хедере страницы (показываем кнопку) */
+  .mobile-logout { display: flex !important; }
+
+  /* Контент */
+  .main { padding: 12px 12px 24px; }
+
+  .page-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .page-head h1 { font-size: 18px; }
+  .page-head .page-head-actions { width: 100%; }
+  .page-head .page-head-actions .btn { width: 100%; justify-content: center; }
+
+  .kpi-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .kpi { padding: 10px 12px; }
+  .kpi-val { font-size: 22px; }
+
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    gap: 0;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs button { white-space: nowrap; padding: 10px 12px; font-size: 13px; flex-shrink: 0; }
+
+  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tbl { min-width: 480px; }
+
+  .search { width: 100%; }
+
+  .tpl-grid { grid-template-columns: 1fr; }
+
+  .wiz-foot { flex-direction: column-reverse; gap: 10px; }
+  .wiz-foot .btn { width: 100%; justify-content: center; }
+
+  .stages { gap: 4px; }
+  .stage-dot { width: 26px; height: 26px; font-size: 11px; }
+  .stage-lb { font-size: 11px; }
+
+  .th-bubble { max-width: 90%; }
+  .thread { padding: 10px 12px; }
+  .th-input { padding: 12px 14px; }
+
+  .detail-grid { gap: 10px; }
+
+  .rv-grid .rv-row { padding: 10px 14px; }
+
+  .doc-card { padding: 12px; }
+
+  .bar-chart { height: 100px; }
+  .bar-lb { font-size: 10px; }
+
+  .modal-inner { margin: 12px; max-height: calc(100vh - 80px); overflow-y: auto; }
+}
+
+/* ── Кнопка выхода в мобильном хедере ────────────────────── */
+.mobile-logout { display: none; }
+
+/* ── Обёртка таблиц (добавляется через JSX) ──────────────── */
+.tbl-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--r-lg);
+}
+
+/* ── viewport meta guard ──────────────────────────────────── */
+@media (max-width: 360px) {
+  .kpi-row { grid-template-columns: 1fr; }
+  .tpl-grid, .doc-grid { grid-template-columns: 1fr; }
+  .nav-item span { display: none; }
+}

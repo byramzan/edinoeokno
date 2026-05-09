@@ -56,7 +56,7 @@ export default function StudentRequestsList() {
         ) : filtered.length === 0 ? (
           <div className="empty" style={{ padding: '40px 20px' }}><div className="ico">∅</div><div>Заявок не найдено</div></div>
         ) : (
-          <table className="tbl">
+          <div className="tbl-wrap"><table className="tbl">
             <thead>
               <tr>
                 <th style={{ width: 130 }}>Номер</th>
@@ -80,7 +80,7 @@ export default function StudentRequestsList() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         )}
       </div>
     </>

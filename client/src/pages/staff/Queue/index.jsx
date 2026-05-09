@@ -90,7 +90,7 @@ export default function StaffQueue({ archiveMode }) {
         ) : filtered.length === 0 ? (
           <div className="empty" style={{ padding: 40 }}><div className="ico">∅</div><div>Заявок не найдено</div></div>
         ) : (
-          <table className="tbl">
+          <div className="tbl-wrap"><table className="tbl">
             <thead>
               <tr>
                 <th style={{ width: 130 }}>Номер</th>
@@ -104,7 +104,7 @@ export default function StaffQueue({ archiveMode }) {
             <tbody>
               {filtered.map(r => <StaffRow key={r.id} r={r} onOpen={id => navigate(`/staff/requests/${id}`)} />)}
             </tbody>
-          </table>
+          </table></div>
         )}
       </div>
     </>

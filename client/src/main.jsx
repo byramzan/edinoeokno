@@ -7,6 +7,7 @@ import { NotificationsProvider } from './context/NotificationsContext';
 import './styles/styles.css';
 import './styles/styles-login.css';
 import './styles/styles-extra.css';
+import './styles/styles-mobile.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
