@@ -99,9 +99,11 @@ function RequestDetail({ role, backPath }) {
         await attachmentsApi.upload(r.id, reviseFile);
         setReviseFile(null);
       }
-      await doAction('SENT', 'Заявка доработана и отправлена повторно.');
+      await requestsApi.resubmit(r.id);
+      await refetch();
+      notify('Заявка отправлена повторно', 'success');
     } catch {
-      notify('Ошибка при отправке на доработку', 'error');
+      notify('Ошибка при повторной отправке', 'error');
     } finally {
       setRevising(false);
     }

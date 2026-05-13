@@ -8,4 +8,5 @@ export const requestsApi = {
   addComment: (id, text) => api.post(`/requests/${id}/comment`, { text }),
   remove: (id) => api.delete(`/requests/${id}`),
   getFilled: (id) => api.get(`/requests/${id}/filled`, { responseType: 'blob' }),
+  resubmit: (id) => api.post(`/requests/${id}/resubmit`),
 };

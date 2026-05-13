@@ -268,6 +268,30 @@ router.post('/:id/comment', authMiddleware, validate(commentSchema), async (req,
   }
 });
 
+// POST /requests/:id/resubmit — студент повторно отправляет заявку после доработки
+router.post('/:id/resubmit', authMiddleware, roleMiddleware('STUDENT'), async (req, res, next) => {
+  try {
+    const request = await prisma.request.findUnique({ where: { id: req.params.id } });
+    if (!request) return res.status(404).json({ error: { code: 'NOT_FOUND' } });
+    if (request.studentId !== req.user.id) return res.status(403).json({ error: { code: 'FORBIDDEN' } });
+    if (request.status !== 'REVISE') {
+      return res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: 'Повторная отправка возможна только для заявок со статусом «На доработке»' } });
+    }
+
+    await prisma.request.update({ where: { id: req.params.id }, data: { status: 'SENT', updatedAt: new Date() } });
+    await prisma.threadMessage.create({
+      data: { requestId: req.params.id, authorId: req.user.id, kind: 'STUDENT', text: 'Заявка доработана и отправлена повторно.' },
+    });
+
+    const full = await prisma.request.findUnique({ where: { id: req.params.id }, include: INCLUDE_FULL });
+    const formatted = formatRequest(full);
+    wsServer.broadcast(req.params.id, formatted);
+    res.json(formatted);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // DELETE /requests/:id
 router.delete('/:id', authMiddleware, roleMiddleware('STUDENT'), async (req, res, next) => {
   try {
