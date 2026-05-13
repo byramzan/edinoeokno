@@ -31,6 +31,9 @@ function RequestDetail({ role, backPath }) {
   const [reasonText, setReasonText] = useState('');
   const [sending, setSending] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [reviseFile, setReviseFile] = useState(null);
+  const [revising, setRevising] = useState(false);
+  const reviseFileRef = useRef(null);
   const threadEndRef = useRef(null);
 
   // Хуки всегда вызываются до любых ранних return
@@ -89,7 +92,20 @@ function RequestDetail({ role, backPath }) {
     doAction('REJECT', reasonText || 'Заявка отклонена.');
     setShowRejectReason(false); setReasonText('');
   };
-  const submitReopen = () => doAction('SENT', 'Заявка доработана и отправлена повторно.');
+  const submitReopen = async () => {
+    setRevising(true);
+    try {
+      if (reviseFile) {
+        await attachmentsApi.upload(r.id, reviseFile);
+        setReviseFile(null);
+      }
+      await doAction('SENT', 'Заявка доработана и отправлена повторно.');
+    } catch {
+      notify('Ошибка при отправке на доработку', 'error');
+    } finally {
+      setRevising(false);
+    }
+  };
 
   const downloadAttachment = async (att) => {
     try {
@@ -255,8 +271,28 @@ function RequestDetail({ role, backPath }) {
               <p className="muted" style={{ fontSize: 13, marginTop: 0 }}>
                 Сотрудник вернул заявку. Внесите правки и отправьте повторно.
               </p>
-              <button className="btn primary" style={{ width: '100%' }} onClick={submitReopen}>
-                <Icon name="send" size={14} /> Отправить повторно
+              <input
+                ref={reviseFileRef}
+                type="file"
+                style={{ display: 'none' }}
+                accept=".pdf,.docx,.jpg,.jpeg,.png"
+                onChange={e => setReviseFile(e.target.files[0] || null)}
+              />
+              {reviseFile ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, padding: '8px 10px', background: 'var(--bg-card)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)' }}>
+                  <Icon name="paperclip" size={14} />
+                  <span style={{ fontSize: 13, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{reviseFile.name}</span>
+                  <button className="btn ghost sm" style={{ padding: '2px 6px' }} onClick={() => { setReviseFile(null); reviseFileRef.current.value = ''; }}>
+                    <Icon name="x" size={12} />
+                  </button>
+                </div>
+              ) : (
+                <button className="btn" style={{ width: '100%', marginBottom: 10 }} onClick={() => reviseFileRef.current.click()}>
+                  <Icon name="paperclip" size={14} /> Прикрепить файл
+                </button>
+              )}
+              <button className="btn primary" style={{ width: '100%' }} onClick={submitReopen} disabled={revising}>
+                <Icon name="send" size={14} /> {revising ? 'Отправка…' : 'Отправить повторно'}
               </button>
             </div>
           )}
